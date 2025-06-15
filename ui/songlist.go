@@ -1,12 +1,13 @@
 package ui
 
 import (
+	"os"
+
 	"github.com/aditya-gupta-dev/oko/song"
 	"github.com/rivo/tview"
 )
 
 const APPTITLE = " Oko - Music Player From Hell "
-const DIR = "C:/Users/hyper/progs/ytt/output"
 
 type SongList struct {
 	songList *tview.List
@@ -25,7 +26,15 @@ func InitSongList() *SongList {
 }
 
 func (list *SongList) AddSongs(app *tview.Application) {
-	songs, err := song.ListSongFiles(DIR)
+	// TODO: implement reading list of directories from a config file and cache them
+	// WARN: This is temp fix
+	var dir string
+	if len(os.Args) < 2 {
+		dir = "C:/Users/hyper/progs/ytt/output"
+	} else {
+		dir = os.Args[1]
+	}
+	songs, err := song.ListSongFiles(dir)
 	if err != nil {
 		panic(err)
 	}
