@@ -60,9 +60,8 @@ func (widget *Widgets) SetStatusText(text string) {
 	}
 }
 
-// TODO: Setup progress bar and actual updates
 func (widget *Widgets) SetProgress(text string) {
 	if widget.player.IsPlaying() {
-
+		widget.progressText.SetText(text)
 	}
 }

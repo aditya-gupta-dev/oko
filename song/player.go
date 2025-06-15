@@ -110,6 +110,21 @@ func (p *Player) Position() (int, int) {
 	return 0, 0
 }
 
+func (p *Player) samplesToDuration(samples int) time.Duration {
+	if p.format.SampleRate <= 0 {
+		return 0
+	}
+	seconds := float64(samples) / float64(p.format.SampleRate)
+	return time.Duration(seconds * float64(time.Second))
+}
+
+func (p *Player) PositionDuration() (time.Duration, time.Duration) {
+	currentSamples, totalSamples := p.Position()
+	currentDuration := p.samplesToDuration(currentSamples)
+	totalDuration := p.samplesToDuration(totalSamples)
+	return currentDuration, totalDuration
+}
+
 func (p *Player) Cleanup() {
 	p.Stop()
 }
