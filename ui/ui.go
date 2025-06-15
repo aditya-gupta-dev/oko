@@ -55,10 +55,10 @@ func (app *App) AttachKeyListener() {
 		case ' ':
 			if app.widgets.player.IsPlaying() {
 				app.widgets.player.Pause()
-				app.widgets.SetStatusText("Paused ⏸")
+				app.widgets.SetStatusText("Paused")
 			} else {
 				app.widgets.player.Play()
-				app.widgets.SetStatusText("Playing ▶")
+				app.widgets.SetStatusText("Playing")
 			}
 
 		}
@@ -71,6 +71,10 @@ func (app *App) AttachKeyListener() {
 				app.widgets.player.Cleanup()
 			}
 
+			if app.widgets.player.IsPlaying() {
+				app.widgets.player.Stop()
+			}
+
 			err := app.widgets.player.LoadFile(app.widgets.songsList.songs[currentIndex].Path)
 
 			if err != nil {
@@ -78,11 +82,9 @@ func (app *App) AttachKeyListener() {
 			}
 
 			app.widgets.player.Play()
-			app.widgets.SetStatusText("Playing ▶")
+			app.widgets.SetStatusText("Playing")
 		}
 
 		return event
 	})
 }
-
-// TODO: bug fix in play or pause
