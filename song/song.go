@@ -43,8 +43,8 @@ func CreateSongFile(path string) (Song, error) {
 	}
 
 	var song Song = Song{
-		Path:     path,
-		Name:     file.Name(),
+		Path:     file.Name(),
+		Name:     filepath.Base(file.Name()),
 		Duration: time.Second * time.Duration(totalDuration),
 	}
 
@@ -53,7 +53,7 @@ func CreateSongFile(path string) (Song, error) {
 
 func ListSongFiles(path string) ([]Song, error) {
 	items, err := os.ReadDir(path)
-	songs := []Song{}
+	songs := make([]Song, 0, 20)
 
 	if err != nil {
 		return []Song{}, err
