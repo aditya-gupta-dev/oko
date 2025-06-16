@@ -34,7 +34,7 @@ func (list *SongList) AddSongs(app *tview.Application) {
 			panic(err)
 		}
 
-		list.songs = songs
+		list.songs = append(list.songs, songs...)
 
 		if len(songs) < 1 {
 			return
