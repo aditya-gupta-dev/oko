@@ -87,9 +87,12 @@ func ListSongFilesOptimized(path string, workers int) ([]Song, error) {
 			var tempSongs []Song = make([]Song, 0, len(chunk))
 
 			for _, entry := range chunk {
+				if !(strings.HasSuffix(strings.ToLower(entry.Name()), ".mp3")) {
+					continue
+				}
 				song, err := CreateSongFile(filepath.Join(path, entry.Name()))
 				if err != nil {
-					fmt.Println("Panic from worker : ", workerId)
+					fmt.Println("Panic from worker : ", workerId, entry.Name())
 					panic(err)
 				}
 				tempSongs = append(tempSongs, song)
@@ -108,6 +111,10 @@ func ListSongFilesOptimized(path string, workers int) ([]Song, error) {
 			var tempSongs []Song = make([]Song, 0, len(chunk))
 
 			for _, entry := range chunk {
+
+				if !(strings.HasSuffix(strings.ToLower(entry.Name()), ".mp3")) {
+					continue
+				}
 				song, err := CreateSongFile(filepath.Join(path, entry.Name()))
 				if err != nil {
 					fmt.Println("Panic from worker : ", workerId)
