@@ -34,7 +34,7 @@ func (list *SongList) AddSongs(app *tview.Application) {
 	} else {
 		dir = os.Args[1]
 	}
-	songs, err := song.ListSongFiles(dir)
+	songs, err := song.ListSongFilesOptimized(dir, 6)
 	if err != nil {
 		panic(err)
 	}
