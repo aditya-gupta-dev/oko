@@ -33,7 +33,9 @@ func VerifyConfigurationExistence() {
 		}
 
 		config := Configuration{
-			Folders: []string{},
+			Folders:   []string{},
+			YTDlpPath: "",
+			ApiKey:    "",
 		}
 		data, _ := json.MarshalIndent(config, "", " ")
 		if err := os.WriteFile(configFile, data, 0644); err != nil {

@@ -10,7 +10,9 @@ import (
 const CONFIG_FILE_NAME = "config.json"
 
 type Configuration struct {
-	Folders []string `json:"folders"`
+	Folders   []string `json:"folders"`
+	YTDlpPath string   `json:"yt-dlp-path"`
+	ApiKey    string   `json:"yt-api-key"`
 }
 
 var (
