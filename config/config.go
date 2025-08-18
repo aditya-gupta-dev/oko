@@ -28,6 +28,14 @@ func GetConfigFolders() []string {
 	return conf.Folders
 }
 
+func GetYoutubeApiKey() string {
+	conf, err := GetConfiguration()
+	if err != nil {
+		panic(err)
+	}
+	return conf.ApiKey
+}
+
 func AddConfigFolder(path string) {
 	conf, err := GetConfiguration()
 	if err != nil {
