@@ -16,6 +16,7 @@ type Player struct {
 	format   beep.Format
 	mutex    sync.Mutex
 	playing  bool
+	loaded   bool
 }
 
 func NewPlayer() *Player {
@@ -37,7 +38,10 @@ func (p *Player) LoadFile(path string) error {
 	}
 	ctrl := &beep.Ctrl{Streamer: beep.Loop(1, streamer), Paused: false}
 
-	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
+	if !p.loaded { 
+		speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
+		p.loaded = true 
+	} 
 	speaker.Play(ctrl)
 
 	p.streamer = streamer
