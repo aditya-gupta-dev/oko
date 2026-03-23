@@ -26,7 +26,7 @@ func SearchSongYoutube(query string, maxResults int64) ([]YoutubeSong, error) {
 		Q(query).
 		MaxResults(maxResults)
 
-	var songs []YoutubeSong = make([]YoutubeSong, maxResults)
+	songs := make([]YoutubeSong, 0, maxResults)
 
 	response, err := call.Do()
 	if err != nil {
