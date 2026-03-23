@@ -36,6 +36,50 @@ func GetYoutubeApiKey() string {
 	return conf.ApiKey
 }
 
+func GetYTDlpPath() string {
+	conf, err := GetConfiguration()
+	if err != nil {
+		panic(err)
+	}
+
+	if conf.YTDlpPath == "" {
+		return "yt-dlp"
+	}
+
+	return conf.YTDlpPath
+}
+
+func GetCacheSongsDir() string {
+	cacheDir, err := os.UserCacheDir()
+	if err != nil {
+		panic(err)
+	}
+
+	return filepath.Join(cacheDir, "oko")
+}
+
+func GetSongFolders() []string {
+	configFolders := GetConfigFolders()
+	folders := make([]string, 0, len(configFolders)+1)
+	seen := make(map[string]struct{}, len(configFolders)+1)
+
+	for _, folder := range configFolders {
+		if _, exists := seen[folder]; exists {
+			continue
+		}
+
+		seen[folder] = struct{}{}
+		folders = append(folders, folder)
+	}
+
+	cacheSongsDir := GetCacheSongsDir()
+	if _, exists := seen[cacheSongsDir]; !exists {
+		folders = append(folders, cacheSongsDir)
+	}
+
+	return folders
+}
+
 func AddConfigFolder(path string) {
 	conf, err := GetConfiguration()
 	if err != nil {

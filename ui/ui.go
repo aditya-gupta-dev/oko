@@ -52,6 +52,14 @@ func StartApplication() {
 
 func (app *App) AttachKeyListener() {
 	app.application.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		if app.widgets.IsDownloadDialogOpen() {
+			if event.Key() == tcell.KeyEscape && app.widgets.CanCloseDownloadDialog() {
+				app.CloseDownloadDialog()
+			}
+
+			return nil
+		}
+
 		if app.widgets.IsSearchDialogOpen() {
 			switch event.Key() {
 			case tcell.KeyEscape:
@@ -62,6 +70,7 @@ func (app *App) AttachKeyListener() {
 				return nil
 			case tcell.KeyEnter:
 				if app.application.GetFocus() == app.widgets.searchResults {
+					app.DownloadSelectedYoutubeSong()
 					return nil
 				}
 			}
@@ -159,6 +168,11 @@ func (app *App) OpenSearchDialog() {
 
 func (app *App) CloseSearchDialog() {
 	app.widgets.CloseSearchDialog()
+	app.application.SetFocus(app.widgets.songsList.songList)
+}
+
+func (app *App) CloseDownloadDialog() {
+	app.widgets.CloseDownloadDialog()
 	app.application.SetFocus(app.widgets.songsList.songList)
 }
 

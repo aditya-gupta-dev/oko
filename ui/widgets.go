@@ -21,6 +21,11 @@ type Widgets struct {
 	searchResults       *tview.List
 	searchDialog        tview.Primitive
 	searchDialogVisible bool
+	youtubeSongs        []api.YoutubeSong
+	downloadLogs        *tview.TextView
+	downloadDialog      tview.Primitive
+	downloadDialogOpen  bool
+	downloadInProgress  bool
 }
 
 func InitWidgets() *Widgets {
@@ -84,21 +89,45 @@ func InitWidgets() *Widgets {
 		SetColumns(0, 70, 0).
 		AddItem(searchDialogFrame, 1, 1, 1, 1, 0, 0, true)
 
+	downloadLogs := tview.NewTextView().
+		SetScrollable(true).
+		SetDynamicColors(true).
+		SetWrap(true)
+
+	downloadLogs.SetBorder(true)
+	downloadLogs.SetTitle(" Youtube Download ")
+	downloadLogs.SetTextColor(tcell.ColorWhite)
+
+	downloadDialogFrame := tview.NewFrame(downloadLogs).
+		SetBorders(0, 0, 0, 0, 0, 0)
+
+	downloadDialogFrame.SetBorder(true)
+	downloadDialogFrame.SetTitle(" Download Audio ")
+	downloadDialogFrame.AddText("yt-dlp logs will appear here. Esc closes after the process finishes.", true, tview.AlignCenter, tcell.Color110)
+
+	downloadDialog := tview.NewGrid().
+		SetRows(0, 18, 0).
+		SetColumns(0, 90, 0).
+		AddItem(downloadDialogFrame, 1, 1, 1, 1, 0, 0, true)
+
 	pages := tview.NewPages().
 		AddPage("main", rootFlex, true, true).
-		AddPage("search", searchDialog, true, false)
+		AddPage("search", searchDialog, true, false).
+		AddPage("download", downloadDialog, true, false)
 
 	return &Widgets{
-		rootFlex:      rootFlex,
-		pages:         pages,
-		songsList:     songList,
-		statusText:    statusText,
-		bottomFlex:    bottomFlex,
-		player:        song.NewPlayer(),
-		progressText:  progressText,
-		searchInput:   searchInput,
-		searchResults: searchResults,
-		searchDialog:  searchDialog,
+		rootFlex:       rootFlex,
+		pages:          pages,
+		songsList:      songList,
+		statusText:     statusText,
+		bottomFlex:     bottomFlex,
+		player:         song.NewPlayer(),
+		progressText:   progressText,
+		searchInput:    searchInput,
+		searchResults:  searchResults,
+		searchDialog:   searchDialog,
+		downloadLogs:   downloadLogs,
+		downloadDialog: downloadDialog,
 	}
 }
 
@@ -133,12 +162,14 @@ func (widget *Widgets) IsSearchDialogOpen() bool {
 }
 
 func (widget *Widgets) ResetYoutubeResults() {
+	widget.youtubeSongs = nil
 	widget.searchResults.Clear()
 	widget.searchResults.AddItem(" Search for a song", "  Press Enter to load the first 5 matches.", 0, nil)
 }
 
 func (widget *Widgets) SetYoutubeResults(songs []api.YoutubeSong, maxResults int) bool {
 	widget.searchResults.Clear()
+	widget.youtubeSongs = make([]api.YoutubeSong, 0, maxResults)
 
 	itemCount := 0
 
@@ -153,6 +184,7 @@ func (widget *Widgets) SetYoutubeResults(songs []api.YoutubeSong, maxResults int
 			0,
 			nil,
 		)
+		widget.youtubeSongs = append(widget.youtubeSongs, result)
 		itemCount++
 
 		if itemCount >= maxResults {
@@ -168,4 +200,49 @@ func (widget *Widgets) SetYoutubeResults(songs []api.YoutubeSong, maxResults int
 	widget.searchResults.SetCurrentItem(0)
 
 	return true
+}
+
+func (widget *Widgets) GetSelectedYoutubeSong() (api.YoutubeSong, bool) {
+	currentIndex := widget.searchResults.GetCurrentItem()
+
+	if currentIndex < 0 || currentIndex >= len(widget.youtubeSongs) {
+		return api.YoutubeSong{}, false
+	}
+
+	return widget.youtubeSongs[currentIndex], true
+}
+
+func (widget *Widgets) OpenDownloadDialog(title string) {
+	widget.CloseSearchDialog()
+	widget.downloadDialogOpen = true
+	widget.downloadInProgress = true
+	widget.downloadLogs.SetTitle(fmt.Sprintf(" Youtube Download - %s ", title))
+	widget.downloadLogs.SetText("")
+	widget.pages.ShowPage("download")
+}
+
+func (widget *Widgets) AppendDownloadLog(text string) {
+	fmt.Fprintln(widget.downloadLogs, text)
+	widget.downloadLogs.ScrollToEnd()
+}
+
+func (widget *Widgets) FinishDownloadDialog(message string) {
+	widget.downloadInProgress = false
+	widget.AppendDownloadLog("")
+	widget.AppendDownloadLog(message)
+	widget.AppendDownloadLog("Press Esc to close this dialog.")
+}
+
+func (widget *Widgets) CloseDownloadDialog() {
+	widget.downloadDialogOpen = false
+	widget.downloadInProgress = false
+	widget.pages.HidePage("download")
+}
+
+func (widget *Widgets) IsDownloadDialogOpen() bool {
+	return widget.downloadDialogOpen
+}
+
+func (widget *Widgets) CanCloseDownloadDialog() bool {
+	return widget.downloadDialogOpen && !widget.downloadInProgress
 }
