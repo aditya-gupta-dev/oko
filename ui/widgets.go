@@ -15,6 +15,8 @@ type Widgets struct {
 	songsList           *SongList
 	statusText          *tview.TextView
 	progressText        *tview.TextView
+	infoFlex            *tview.Flex
+	volumeText          *tview.TextView
 	bottomFlex          *tview.Flex
 	player              *song.Player
 	searchInput         *tview.InputField
@@ -34,17 +36,26 @@ func InitWidgets() *Widgets {
 	statusText := tview.NewTextView()
 
 	progressText := tview.NewTextView()
+	volumeText := tview.NewTextView()
 
 	progressText.SetTextColor(tcell.Color110)
 	progressText.SetText("")
+	volumeText.SetTextColor(tcell.Color110)
+	volumeText.SetTextAlign(tview.AlignCenter)
+	volumeText.SetDynamicColors(true)
 
 	statusText.
 		SetText("Select a song")
 
-	bottomFlex := tview.NewFlex().
+	infoFlex := tview.NewFlex().
 		SetDirection(tview.FlexColumn).
 		AddItem(statusText, 0, 3, false).
 		AddItem(progressText, 0, 7, false)
+
+	bottomFlex := tview.NewFlex().
+		SetDirection(tview.FlexColumn).
+		AddItem(infoFlex, 0, 12, false).
+		AddItem(volumeText, 8, 0, false)
 
 	bottomFlex.SetBorder(true)
 
@@ -115,11 +126,13 @@ func InitWidgets() *Widgets {
 		AddPage("search", searchDialog, true, false).
 		AddPage("download", downloadDialog, true, false)
 
-	return &Widgets{
+	widgets := &Widgets{
 		rootFlex:       rootFlex,
 		pages:          pages,
 		songsList:      songList,
 		statusText:     statusText,
+		infoFlex:       infoFlex,
+		volumeText:     volumeText,
 		bottomFlex:     bottomFlex,
 		player:         song.NewPlayer(),
 		progressText:   progressText,
@@ -129,6 +142,10 @@ func InitWidgets() *Widgets {
 		downloadLogs:   downloadLogs,
 		downloadDialog: downloadDialog,
 	}
+
+	widgets.SetVolumeIndicator()
+
+	return widgets
 }
 
 func (widget *Widgets) SetStatusText(text string) {
@@ -143,6 +160,46 @@ func (widget *Widgets) SetProgress(text string) {
 	if widget.player.IsPlaying() {
 		widget.progressText.SetText(text)
 	}
+}
+
+func (widget *Widgets) SetVolumeIndicator() {
+	volumePercent := widget.player.GetVolumePercent()
+	filledBars := volumePercent / 20
+
+	if filledBars < 0 {
+		filledBars = 0
+	}
+
+	if filledBars > 5 {
+		filledBars = 5
+	}
+
+	segments := make([]string, 0, 7)
+	segments = append(segments, fmt.Sprintf("[ %d%% ]", volumePercent))
+
+	for level := 5; level >= 1; level-- {
+		if filledBars >= level {
+			segments = append(segments, "[#]")
+			continue
+		}
+
+		segments = append(segments, "[ ]")
+	}
+
+	widget.volumeText.SetText(fmt.Sprintf("Volume\n%s", joinLines(segments)))
+}
+
+func joinLines(lines []string) string {
+	if len(lines) == 0 {
+		return ""
+	}
+
+	output := lines[0]
+	for _, line := range lines[1:] {
+		output += "\n" + line
+	}
+
+	return output
 }
 
 func (widget *Widgets) OpenSearchDialog() {

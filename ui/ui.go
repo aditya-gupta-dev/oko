@@ -120,6 +120,25 @@ func (app *App) AttachKeyListener() {
 			if app.widgets.player.IsPlaying() {
 				app.widgets.player.Seek(5)
 			}
+		case 'w':
+			volumePercent := app.widgets.player.IncreaseVolume()
+			app.widgets.SetVolumeIndicator()
+			app.widgets.SetStatusText(fmt.Sprintf("Volume %d%%", volumePercent))
+			return nil
+		case 's':
+			volumePercent := app.widgets.player.DecreaseVolume()
+			app.widgets.SetVolumeIndicator()
+			app.widgets.SetStatusText(fmt.Sprintf("Volume %d%%", volumePercent))
+			return nil
+		case 'l':
+			if app.widgets.player.HasTrackLoaded() {
+				if app.widgets.player.ToggleLoop() {
+					app.widgets.SetStatusText("Looping enabled")
+				} else {
+					app.widgets.SetStatusText("Looping disabled")
+				}
+			}
+			return nil
 		case ' ':
 			if app.widgets.player.IsPlaying() {
 				app.widgets.player.Pause()
@@ -153,6 +172,7 @@ func (app *App) AttachKeyListener() {
 
 			app.widgets.player.Play()
 			app.widgets.SetStatusText("Playing")
+			app.widgets.SetVolumeIndicator()
 
 			go app.UpdateProgressBar()
 		}
