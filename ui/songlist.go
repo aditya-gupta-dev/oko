@@ -5,6 +5,7 @@ import (
 
 	"github.com/aditya-gupta-dev/oko/config"
 	"github.com/aditya-gupta-dev/oko/song"
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
@@ -20,6 +21,11 @@ func InitSongList() *SongList {
 
 	list.SetTitle(APPTITLE)
 	list.SetBorder(true)
+	list.SetBackgroundColor(tcell.ColorDefault)
+	list.SetMainTextColor(tcell.ColorDefault)
+	list.SetSecondaryTextColor(tcell.ColorDefault)
+	list.SetSelectedBackgroundColor(tcell.ColorDefault)
+	list.SetSelectedTextColor(tcell.ColorDefault)
 
 	return &SongList{
 		songList: list,
