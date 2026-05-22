@@ -40,17 +40,23 @@ func InitWidgets() *Widgets {
 
 	progressText.SetTextColor(tcell.Color110)
 	progressText.SetText("")
+	progressText.SetBackgroundColor(tcell.ColorDefault)
+	
 	volumeText.SetTextColor(tcell.Color110)
-	volumeText.SetTextAlign(tview.AlignCenter)
+	volumeText.SetAlign(tview.AlignCenter)
 	volumeText.SetDynamicColors(true)
+	volumeText.SetBackgroundColor(tcell.ColorDefault)
 
 	statusText.
-		SetText("Select a song")
+		SetText("Select a song").
+		SetBackgroundColor(tcell.ColorDefault)
 
 	infoFlex := tview.NewFlex().
 		SetDirection(tview.FlexColumn).
 		AddItem(statusText, 0, 3, false).
 		AddItem(progressText, 0, 7, false)
+
+	infoFlex.SetBackgroundColor(tcell.ColorDefault)
 
 	bottomFlex := tview.NewFlex().
 		SetDirection(tview.FlexColumn).
@@ -58,11 +64,14 @@ func InitWidgets() *Widgets {
 		AddItem(volumeText, 8, 0, false)
 
 	bottomFlex.SetBorder(true)
+	bottomFlex.SetBackgroundColor(tcell.ColorDefault)
 
 	rootFlex := tview.NewFlex().
 		SetDirection(tview.FlexRow).
 		AddItem(songList.songList, 0, 8, true).
 		AddItem(bottomFlex, 0, 2, false)
+
+	rootFlex.SetBackgroundColor(tcell.ColorDefault)
 
 	searchInput := tview.NewInputField().
 		SetLabel("Search: ").
@@ -70,8 +79,8 @@ func InitWidgets() *Widgets {
 
 	searchInput.SetLabelColor(tcell.Color110)
 	searchInput.SetFieldTextColor(tcell.ColorWhite)
-	searchInput.SetFieldBackgroundColor(tcell.Color235)
-	searchInput.SetBackgroundColor(tcell.Color235)
+	searchInput.SetFieldBackgroundColor(tcell.ColorDefault)
+	searchInput.SetBackgroundColor(tcell.ColorDefault)
 
 	searchResults := tview.NewList()
 
@@ -82,11 +91,14 @@ func InitWidgets() *Widgets {
 	searchResults.SetSelectedTextColor(tcell.ColorWhite)
 	searchResults.SetSelectedBackgroundColor(tcell.Color237)
 	searchResults.SetHighlightFullLine(true)
+	searchResults.SetBackgroundColor(tcell.ColorDefault)
 
 	searchDialogContent := tview.NewFlex().
 		SetDirection(tview.FlexRow).
 		AddItem(searchInput, 3, 0, true).
 		AddItem(searchResults, 0, 1, false)
+
+	searchDialogContent.SetBackgroundColor(tcell.ColorDefault)
 
 	searchDialogFrame := tview.NewFrame(searchDialogContent).
 		SetBorders(0, 0, 0, 0, 0, 0)
@@ -94,11 +106,14 @@ func InitWidgets() *Widgets {
 	searchDialogFrame.SetBorder(true)
 	searchDialogFrame.SetTitle(" Search Youtube ")
 	searchDialogFrame.AddText("Press Enter to search, Esc to close.", true, tview.AlignCenter, tcell.Color110)
+	searchDialogFrame.SetBackgroundColor(tcell.ColorDefault)
 
 	searchDialog := tview.NewGrid().
 		SetRows(0, 11, 0).
 		SetColumns(0, 70, 0).
 		AddItem(searchDialogFrame, 1, 1, 1, 1, 0, 0, true)
+
+	searchDialog.SetBackgroundColor(tcell.ColorDefault)
 
 	downloadLogs := tview.NewTextView().
 		SetScrollable(true).
@@ -108,6 +123,7 @@ func InitWidgets() *Widgets {
 	downloadLogs.SetBorder(true)
 	downloadLogs.SetTitle(" Youtube Download ")
 	downloadLogs.SetTextColor(tcell.ColorWhite)
+	downloadLogs.SetBackgroundColor(tcell.ColorDefault)
 
 	downloadDialogFrame := tview.NewFrame(downloadLogs).
 		SetBorders(0, 0, 0, 0, 0, 0)
@@ -115,16 +131,21 @@ func InitWidgets() *Widgets {
 	downloadDialogFrame.SetBorder(true)
 	downloadDialogFrame.SetTitle(" Download Audio ")
 	downloadDialogFrame.AddText("yt-dlp logs will appear here. Esc closes after the process finishes.", true, tview.AlignCenter, tcell.Color110)
+	downloadDialogFrame.SetBackgroundColor(tcell.ColorDefault)
 
 	downloadDialog := tview.NewGrid().
 		SetRows(0, 18, 0).
 		SetColumns(0, 90, 0).
 		AddItem(downloadDialogFrame, 1, 1, 1, 1, 0, 0, true)
 
+	downloadDialog.SetBackgroundColor(tcell.ColorDefault)
+
 	pages := tview.NewPages().
 		AddPage("main", rootFlex, true, true).
 		AddPage("search", searchDialog, true, false).
 		AddPage("download", downloadDialog, true, false)
+
+	pages.SetBackgroundColor(tcell.ColorDefault)
 
 	widgets := &Widgets{
 		rootFlex:       rootFlex,
