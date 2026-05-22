@@ -43,7 +43,7 @@ func InitWidgets() *Widgets {
 	progressText.SetBackgroundColor(tcell.ColorDefault)
 	
 	volumeText.SetTextColor(tcell.Color110)
-	volumeText.SetAlign(tview.AlignCenter)
+	volumeText.SetTextAlign(tview.AlignCenter)
 	volumeText.SetDynamicColors(true)
 	volumeText.SetBackgroundColor(tcell.ColorDefault)
 
