@@ -19,6 +19,13 @@ const youtubeSearchResultLimit int64 = 5
 
 func initApp() *App {
 	app := tview.NewApplication()
+	
+	// Set the application's background to the terminal's default
+	app.SetBeforeDrawFunc(func(screen tcell.Screen) bool {
+		screen.SetStyle(tcell.StyleDefault)
+		return false
+	})
+	
 	widgets := InitWidgets()
 
 	go widgets.songsList.AddSongs(app)
